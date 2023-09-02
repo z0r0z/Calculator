@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 /// @title Calculator
-/// @dev Solidity's native arithmetic with safety checks.
+/// @dev Simple trustless calculator via Solidity arithmetic operators.
 contract Calculator {
     /// @notice Add two numbers.
     /// @param a The first number.
