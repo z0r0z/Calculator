@@ -74,45 +74,67 @@ contract Test {
 contract CalculatorTest is Test {
     Calculator immutable calculator = new Calculator();
 
-    function setup() public payable {}
+    function setUp() public payable {}
 
     function testAdd() public payable {
-        assertEq(calculator.add(3, 2), 5, "Addition test failed");
+        assertEq(uint256(calculator.add(3, 2)), 5, "Addition test failed");
     }
 
     function testSubtract() public payable {
-        assertEq(calculator.subtract(5, 3), 2, "Subtraction test failed");
+        assertEq(uint256(calculator.subtract(5, 3)), 2, "Subtraction test failed");
     }
 
     function testMultiply() public payable {
-        assertEq(calculator.multiply(3, 4), 12, "Multiplication test failed");
+        assertEq(uint256(calculator.multiply(3, 4)), 12, "Multiplication test failed");
     }
 
     function testDivide() public payable {
-        assertEq(calculator.divide(8, 4), 2, "Division test failed");
+        assertEq(uint256(calculator.divide(8, 4)), 2, "Division test failed");
     }
 
     function testFailDivideByZero() public {
         try calculator.divide(1, 0) {
-            fail("Division or modulo by 0");
+            fail("Division by zero");
         } catch Error(string memory reason) {
-            assertEq(reason, "Division or modulo by 0", "Unexpected revert reason");
+            assertEq(reason, "Cannot divide by zero", "Unexpected revert reason");
         }
     }
 
     function testModulo() public payable {
-        assertEq(calculator.modulo(10, 3), 1, "Modulo test failed");
+        assertEq(uint256(calculator.modulo(10, 3)), 1, "Modulo test failed");
     }
 
     function testFailModuloByZero() public {
         try calculator.modulo(1, 0) {
-            fail("Division or modulo by 0");
+            fail("Modulo by zero");
         } catch Error(string memory reason) {
-            assertEq(reason, "Division or modulo by 0", "Unexpected revert reason");
+            assertEq(reason, "Cannot modulo by zero", "Unexpected revert reason");
         }
     }
 
     function testPower() public payable {
-        assertEq(calculator.power(2, 3), 8, "Power test failed");
+        assertEq(uint256(calculator.power(2, 3)), 8, "Power test failed");
+    }
+
+    function testCalculate() public payable {
+        function(int256, int256) external pure returns (int256)[] memory ops =
+            new function(int256, int256) external pure returns (int256)[](2);
+        ops[0] = calculator.add;
+        ops[1] = calculator.multiply;
+
+        int256[] memory values = new int256[](2);
+        values[0] = 2;
+        values[1] = 3;
+
+        assertEq(uint256(calculator.calculate(10, values, ops)), 36, "Calculate test failed");
+
+        // Test with empty y and op arrays
+        int256[] memory emptyValues = new int256[](0);
+        function(int256, int256) external pure returns (int256)[] memory emptyOps =
+            new function(int256, int256) external pure returns (int256)[](0);
+
+        assertEq(
+            uint256(calculator.calculate(10, emptyValues, emptyOps)), 10, "Calculate test with empty arrays failed"
+        );
     }
 }
