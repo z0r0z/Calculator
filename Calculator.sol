@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.19;
 
-/// @notice Calculator for basic arithmetic operations including negatives.
-/// @dev Safe arithmetic via Solidity-native overflow/underflow protection.
 contract Calculator {
     function add(int256 x, int256 y) public pure returns (int256) {
         return x + y;
@@ -24,8 +22,10 @@ contract Calculator {
         return x % y;
     }
 
-    function power(uint256 base, uint256 exponent) public pure returns (uint256) {
-        return base ** exponent;
+    function power(int256 base, uint8 exponent) public pure returns (int256) {
+        return base < 0 ? exponent % 2 == 0 ? int(uint(-base) ** exponent) :
+                -(int(uint(base) ** exponent)) : 
+                    int(uint(base) ** exponent);
     }
 
     function calculate(
@@ -34,7 +34,7 @@ contract Calculator {
         function(int256, int256) external pure returns (int256)[] calldata op) 
     public pure returns (int256 z) {
         unchecked {
-            require(y.length == op.length, "Arrays must be of equal length");
+            require(y.length == op.length, "Arrays not equal");
             z = x;
             for (uint256 i; i < y.length; ++i) z = op[i](z, y[i]);
         }
