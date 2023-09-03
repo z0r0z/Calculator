@@ -6,6 +6,7 @@ import "../Calculator.sol";
 contract Test {
     event log(string);
     event log_named_uint(string key, uint256 val);
+    event log_named_int(string key, int256 val);
     event log_named_string(string key, string val);
 
     bool private _failed;
@@ -48,6 +49,22 @@ contract Test {
     }
 
     function assertEq(uint256 a, uint256 b, string memory err) internal {
+        if (a != b) {
+            emit log_named_string("Error", err);
+            assertEq(a, b);
+        }
+    }
+
+    function assertEq(int256 a, int256 b) internal {
+        if (a != b) {
+            emit log("Error: a == b not satisfied [int]");
+            emit log_named_int("      Left", a);
+            emit log_named_int("     Right", b);
+            fail();
+        }
+    }
+
+    function assertEq(int256 a, int256 b, string memory err) internal {
         if (a != b) {
             emit log_named_string("Error", err);
             assertEq(a, b);
@@ -114,6 +131,7 @@ contract CalculatorTest is Test {
 
     function testPower() public payable {
         assertEq(uint256(calculator.power(2, 3)), 8, "Power test failed");
+        assertEq(int256(calculator.power(-2, 3)), -8, "Power test failed");
     }
 
     function testCalculate() public payable {

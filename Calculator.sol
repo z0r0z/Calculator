@@ -1,42 +1,42 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity 0.8.19;
+pragma solidity 0.8.21;
 
 contract Calculator {
-    function add(int256 x, int256 y) public pure returns (int256) {
+    function add(int x, int y) public pure returns (int) {
         return x + y;
     }
 
-    function subtract(int256 x, int256 y) public pure returns (int256) {
+    function subtract(int x, int y) public pure returns (int) {
         return x - y;
     }
 
-    function multiply(int256 x, int256 y) public pure returns (int256) {
+    function multiply(int x, int y) public pure returns (int) {
         return x * y;
     }
 
-    function divide(int256 x, int256 y) public pure returns (int256) {
+    function divide(int x, int y) public pure returns (int) {
         return x / y;
     }
 
-    function modulo(int256 x, int256 y) public pure returns (int256) {
+    function modulo(int x, int y) public pure returns (int) {
         return x % y;
     }
 
-    function power(int256 base, uint8 exponent) public pure returns (int256) {
-        return base < 0 ? exponent % 2 == 0 ? int(uint(-base) ** exponent) :
-                -(int(uint(base) ** exponent)) : 
-                    int(uint(base) ** exponent);
+    function power(int base, uint exponent) public pure returns (int) {
+        return (
+            (base < 0 && exponent % 2 != 0) ? 
+            -int(uint(-base) ** exponent) : 
+             int(uint((base < 0 ? -base : base)) ** exponent)
+        );
     }
 
-    function calculate(
-        int256 x, 
-        int256[] calldata y, 
-        function(int256, int256) external pure returns (int256)[] calldata op) 
-    public pure returns (int256 z) {
+    function calculate(int x, int[] calldata y, 
+        function(int, int) external pure returns (int)[] calldata op) 
+    public pure returns (int z) {
         unchecked {
             require(y.length == op.length, "Arrays not equal");
             z = x;
-            for (uint256 i; i < y.length; ++i) z = op[i](z, y[i]);
+            for (uint i; i < y.length; ++i) z = op[i](z, y[i]);
         }
     }
 }
