@@ -1,42 +1,42 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.19;
 
-/// @notice Calculator for basic arithmetic operations.
-/// @dev Simply uses only Solidity arithmetic operators.
+/// @notice Calculator for basic arithmetic operations including negatives.
+/// @dev Safe arithmetic via Solidity-native overflow/underflow protection.
 contract Calculator {
-    /// @notice Adds two numbers.
-    /// @return The sum of `a` and `b`.
-    function add(uint256 a, uint256 b) public pure returns (uint256) {
-        return a + b;
+    function add(int256 x, int256 y) public pure returns (int256) {
+        return x + y;
     }
 
-    /// @notice Subtracts `b` from `a`.
-    /// @return The difference between `a` and `b`.
-    function subtract(uint256 a, uint256 b) public pure returns (uint256) {
-        return a - b;
+    function subtract(int256 x, int256 y) public pure returns (int256) {
+        return x - y;
     }
 
-    /// @notice Multiplies two numbers.
-    /// @return The product of `a` and `b`.
-    function multiply(uint256 a, uint256 b) public pure returns (uint256) {
-        return a * b;
+    function multiply(int256 x, int256 y) public pure returns (int256) {
+        return x * y;
     }
 
-    /// @notice Divides `a` by `b`.
-    /// @return The quotient of `a` and `b`.
-    function divide(uint256 a, uint256 b) public pure returns (uint256) {
-        return a / b;
+    function divide(int256 x, int256 y) public pure returns (int256) {
+        return x / y;
     }
 
-    /// @notice Calculates the remainder of `a` divided by `b`.
-    /// @return The remainder of `a` and `b`.
-    function modulo(uint256 a, uint256 b) public pure returns (uint256) {
-        return a % b;
+    function modulo(int256 x, int256 y) public pure returns (int256) {
+        return x % y;
     }
 
-    /// @notice Raises `base` to the power of `exponent`.
-    /// @return `base` raised to the `exponent`.
     function power(uint256 base, uint256 exponent) public pure returns (uint256) {
         return base ** exponent;
+    }
+
+    function calculate(
+        int256 x, 
+        int256[] calldata y, 
+        function(int256, int256) external pure returns (int256)[] calldata op) 
+    public pure returns (int256 z) {
+        unchecked {
+            require(y.length == op.length, "Arrays must be of equal length");
+            z = x;
+            for (uint256 i; i < y.length; ++i) z = op[i](z, y[i]);
+        }
     }
 }
